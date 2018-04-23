@@ -19,21 +19,25 @@ client.on("message", message => {
     if ( command === 'hello' ) {
       message.channel.send(`${message.author.username}`);
     }
+    if (command === 'howgay') {
+      let amount = Math.random();
+      message.channel.send(`${message.author.username} is ${amount}% gay.`);
+    }
   }
 });
 
 client.on("ready", () => {
   let user = client.user;
-  client.user.setUsername("Smith");
-  client.user.setPresence({
+  user.setUsername("Smith");
+  user.setPresence({
     game: {
       name: "with discord.js",
       type: 'PLAYING'
     },
-    status: "dnd"
+    status: "online"
   })
     .then();
-  console.log(`Successful startup as ${client.user.username}`)
+  console.log(`Successful startup as ${user.username}`)
 });
 
 client.login(config.token).then(() => {});
