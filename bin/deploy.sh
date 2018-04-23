@@ -83,20 +83,20 @@ done
 
 image="$REPO:$tag"
 for task in $TASKS; do
-  task="$NAMESPACE-$task"
+  task="Smith-Bot"
   echo
   echo "Updating task family: $task"
 
   # pull current task definition and replace the image(s)
-  current_def=`aws ecs describe-task-definition --task-def "$NAMESPACE"`
+  current_def=`aws ecs describe-task-definition --task-def "$task"`
   current_containers=`node -pe "JSON.stringify(JSON.parse(process.argv[1]).taskDefinition.containerDefinitions)" "$current_def"`
   new_containers=`echo "$current_containers" | sed "s~$REPO:[A-Za-z0-9._-]*~$image~g"`
 
   # create a new revision of the task family
-  aws ecs register-task-definition --family $NAMESPACE --container-definitions "$new_containers" > /dev/null
+  aws ecs register-task-definition --family $task --container-definitions "$new_containers" > /dev/null
 
   echo "Updating $task service of cluster: $cluster"
-  aws ecs update-service --cluster $cluster --service $NAMESPACE --task-definition $NAMESPACE > /dev/null
+  aws ecs update-service --cluster $cluster --service $task --task-definition $task > /dev/null
 done
 
 echo 'Finished'
