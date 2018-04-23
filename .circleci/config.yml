@@ -13,7 +13,7 @@ jobs:
       - run: sudo apt-get install openssl
       - run: sudo apt-get install python3 python-pip python-dev build-essential
 
-      - run: pip install --upgrade pip
+      - run: pip install pip
       - run: pip install --upgrade virtualenv
       - run: pip install awscli --upgrade --user
       - run: echo 'export PATH=~/.local/bin:$PATH' >> $BASH_ENV
