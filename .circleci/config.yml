@@ -1,0 +1,31 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.9
+
+    steps:
+      - checkout
+      - run: sudo apt-get install openssl
+      - run: sudo apt-get install python3 python-pip python-dev build-essential
+
+      - run: pip install --upgrade pip
+      - run: pip install --upgrade virtualenv
+      - run: pip install awscli --upgrade --user
+      - run: echo 'export PATH=~/.local/bin:$PATH' >> $BASH_ENV
+      - run: source ~/.bashrc
+      - run: aws --version
+      - run: npm install
+      - run: printf '%s\n' "ACCESS_KEY_ID=$ACCESS_KEY_ID" "SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY" >> .env
+
+      - run:
+          name: Build
+          command: tsc
+
+      - run:
+          name: Deploy
+          command: sh bin/deploy.sh
