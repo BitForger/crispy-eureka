@@ -13,9 +13,9 @@ jobs:
       - run: sudo apt-get install openssl
       - run: sudo apt-get install python3 python-pip python-dev build-essential
 
-      - run: pip install pip
-      - run: pip install --upgrade virtualenv
-      - run: pip install awscli --upgrade --user
+      - run: sudo pip install pip
+      - run: sudo pip install --upgrade virtualenv
+      - run: sudo pip install awscli --upgrade --user
       - run: echo 'export PATH=~/.local/bin:$PATH' >> $BASH_ENV
       - run: source ~/.bashrc
       - run: aws --version
