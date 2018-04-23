@@ -10,7 +10,7 @@
 # Version 0.1.7
 
 NAMESPACE="smith-bot"
-APP="web"
+APP="$NAMESPACE"
 REPO="508511800738.dkr.ecr.us-east-1.amazonaws.com/$NAMESPACE"
 LOCAL_REPO="$NAMESPACE/$APP"
 TASKS="$APP"
@@ -88,7 +88,7 @@ for task in $TASKS; do
   echo "Updating task family: $task"
 
   # pull current task definition and replace the image(s)
-  current_def=`aws ecs describe-task-definition --task-def "$task"`
+  current_def=`aws ecs describe-task-definition --task-def "$NAMESPACE"`
   current_containers=`node -pe "JSON.stringify(JSON.parse(process.argv[1]).taskDefinition.containerDefinitions)" "$current_def"`
   new_containers=`echo "$current_containers" | sed "s~$REPO:[A-Za-z0-9._-]*~$image~g"`
 
