@@ -15,7 +15,9 @@ jobs:
 
       - run: sudo pip install pip
       - run: sudo pip install --upgrade virtualenv
-      - run: sudo pip install awscli --upgrade --user
+      - run: curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+      - run: unzip awscli-bundle.zip
+      - run: sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
       - run: echo 'export PATH=~/.local/bin:$PATH' >> $BASH_ENV
       - run: source ~/.bashrc
       - run: aws --version
