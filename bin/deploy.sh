@@ -52,7 +52,7 @@ echo "Building docker image for $env"
 docker build -t "$LOCAL_REPO" .
 
 # determine primary tag
-tag=`git describe --abbrev=0 --match 'v[0-9]*'`
+tag='v0.0.9'
 build_number=`git rev-list "$tag".. --count`
 if [ "$build_number" = "0" ]; then
   tag=`semver "$tag"`
