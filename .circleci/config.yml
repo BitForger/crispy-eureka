@@ -22,6 +22,7 @@ jobs:
       - run: source ~/.bashrc
       - run: aws --version
       - run: npm install
+      - run: sudo npm install -g typescript
       - run: printf '%s\n' "ACCESS_KEY_ID=$ACCESS_KEY_ID" "SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY" >> .env
 
       - run:
