@@ -12,6 +12,9 @@ jobs:
       - checkout
       - run: sudo apt-get install openssl
       - run: sudo apt-get install python3 python-pip python-dev build-essential
+      - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      - run: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      - run: apt-cache policy docker-ce && sudo apt-get install -y docker-ce
 
       - run: sudo pip install pip
       - run: sudo pip install --upgrade virtualenv
