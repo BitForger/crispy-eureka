@@ -25,30 +25,9 @@ set -e
 # semver may be in node_modules
 PATH="$PATH:node_modules/.bin"
 
-# determine the current branch (Jenkins uses an environment variable)
-if [ -z "$GIT_BRANCH" ]; then
-  # check git
-  if [ -n "`git status --porcelain | grep -v 'deploy.sh'`" ]; then
-    echo "Please commit and push your changes before proceeding"
-    exit 1
-  elif [ -n "`git cherry -v | grep -v 'deploy.sh'`" ]; then
-    echo "Please push your changes before proceeding"
-    exit 1
-  fi
-  branch=`git rev-parse --abbrev-ref HEAD`
-else
-  branch=`echo "$GIT_BRANCH" | awk -F/ '{ print $NF }'`
-fi
 # determine environment and cluster to deploy to, based on the current branch
 cluster="Web-Apps"
-if [ "$branch" = "production" ]; then
-  env="production"
-elif [ "$branch" = "beta" ]; then
-  env="beta"
-else
-  env="stage"
-fi
-
+env="stage"
 # build docker
 echo "Building docker image for $env"
 docker build -t "$LOCAL_REPO" .
