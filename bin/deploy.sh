@@ -17,7 +17,7 @@ TASKS="$APP"
 
 export AWS_DEFAULT_REGION="us-east-1"
 
-npm version patch
+#npm version patch
 
 # exit on any error
 set -e
