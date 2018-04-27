@@ -20,7 +20,7 @@ client.on("message", message => {
       message.channel.send(`${message.author.username}`);
     }
     if (command === 'howgay') {
-      let amount = Math.random();
+      let amount = Math.floor(Math.random() * Math.floor(100));
       message.channel.send(`${message.author.username} is ${amount}% gay.`);
     }
   }
