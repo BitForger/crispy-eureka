@@ -3,9 +3,9 @@
  * @soundtrack Dripping - Submersed
  */
 
-import { Client } from 'discord.js';
-import Config                   from "./config";
-import * as Commando            from 'discord.js-commando';
+import { Client, Guild, User } from 'discord.js';
+import Config                  from "./config";
+import * as Commando           from 'discord.js-commando';
 
 const client = new Commando.Client();
 const config = new Config();
@@ -19,9 +19,39 @@ client.on("message", message => {
     if ( command === 'hello' ) {
       message.channel.send(`${message.author.username}`);
     }
-    if (command === 'howgay') {
+    if (command.startsWith('howgay')) {
       let amount = Math.floor(Math.random() * Math.floor(100));
-      message.channel.send(`${message.author.username} is ${amount}% gay.`);
+      if (command.length === 'howgay'.length) {
+        message.channel.send(`${message.author.username} is ${amount}% gay.`);
+      }
+      else {
+        const splitCommand = command.split(" ");
+        splitCommand.shift(); //NOTE remove the actual command from string
+        let flags = splitCommand;
+        for (let i = 0; i < flags.length; i++) {
+          let flag = flags[i];
+          if ( flag.startsWith('--') ) {
+            flag = flag.substr(2);
+            if (flag === "user") {
+              flags = flags.slice(i + 1);
+              let user = flags[0];
+              const guild = message.guild;
+              let u = guild.members.find((value, key) => {
+                if (value.displayName === user) {
+                  return value;
+                }
+              });
+              if (u) {
+                message.channel.send(`${u.displayName} is ${amount}% gay!`);
+              }
+            }
+            if (flag === "mention") {
+              // TODO figure out a way to allow a mention to be sent
+            }
+          }
+        }
+
+      }
     }
   }
 });
@@ -38,6 +68,10 @@ client.on("ready", () => {
   })
     .then();
   console.log(`Successful startup as ${user.username}`)
+});
+
+client.on("error", (error) => {
+  console.log(error);
 });
 
 client.login(config.token).then(() => {});
