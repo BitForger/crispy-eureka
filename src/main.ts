@@ -3,9 +3,9 @@
  * @soundtrack Dripping - Submersed
  */
 
-import { Client, Guild, User } from 'discord.js';
-import Config                  from "./config";
-import * as Commando           from 'discord.js-commando';
+import { Client, Guild, GuildMember, User } from 'discord.js';
+import Config                               from "./config";
+import * as Commando                        from 'discord.js-commando';
 
 const client = new Commando.Client();
 const config = new Config();
@@ -42,7 +42,7 @@ client.on("message", message => {
                 }
               });
               if (u) {
-                message.channel.send(`${u.displayName} is ${amount}% gay!`);
+                message.channel.send(`<@${u.user.id}> is ${amount}% gay!`);
               }
             }
             if (flag === "mention") {
@@ -61,8 +61,8 @@ client.on("ready", () => {
   user.setUsername("Smith");
   user.setPresence({
     game: {
-      name: "with discord.js",
-      type: 'PLAYING'
+      name: "pigs learn to fly",
+      type: 'STREAMING'
     },
     status: "online"
   })
