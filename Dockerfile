@@ -5,9 +5,8 @@ COPY ./package* ./
 RUN npm i
 RUN npm i -g typescript
 
-COPY . .
-
-RUN tsc
+RUN mkdir ./dist
+COPY ./dist ./dist/
 
 COPY ./bin/start-server.sh /usr/local/bin/start-server
 

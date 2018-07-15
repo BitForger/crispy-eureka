@@ -1,88 +1,47 @@
 #!/usr/bin/env bash
-# Deploys the project using the following steps:
-# - build a docker image
-# - push docker tag(s)
-# - update task definition(s)
-# - update service(s)
-#
-# requires aws-cli, semver, node
-#
-# Version 0.1.7
-
+TASKS="smith-bot"
 NAMESPACE="smith-bot"
-APP="$NAMESPACE"
 REPO="508511800738.dkr.ecr.us-east-1.amazonaws.com/$NAMESPACE"
-LOCAL_REPO="$NAMESPACE/$APP"
-TASKS="$APP"
+PACKAGE_VERSION=$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g')
+
+PACKAGE_VERSION="$(echo -e "$PACKAGE_VERSION" | tr -d '[:space:]')"
 
 export AWS_DEFAULT_REGION="us-east-1"
 
-git config --global user.email "kovacsn66@gmail.com"
-git config --global user.name "Noah CI"
-
-npm version patch
-
-# exit on any error
-set -e
-
-# semver may be in node_modules
-PATH="$PATH:node_modules/.bin"
-
-# determine the current branch (Jenkins uses an environment variable)
-if [ -z "$GIT_BRANCH" ]; then
-  # check git
-  if [ -n "`git status --porcelain | grep -v 'deploy.sh'`" ]; then
-    echo "Please commit and push your changes before proceeding"
-  elif [ -n "`git cherry -v | grep -v 'deploy.sh'`" ]; then
-    echo "Please push your changes before proceeding"
-  fi
-  branch=`git rev-parse --abbrev-ref HEAD`
-else
-  branch=`echo "$GIT_BRANCH" | awk -F/ '{ print $NF }'`
-fi
-# determine environment and cluster to deploy to, based on the current branch
-cluster="Web-Apps"
-if [ "$branch" = "production" ]; then
-  env="production"
-elif [ "$branch" = "beta" ]; then
-  env="beta"
-else
-  env="stage"
-fi
-
-# build docker
-echo "Building docker image for $env"
-docker build -t "$LOCAL_REPO" .
+docker build -t "smith-bot:latest" .
 
 # determine primary tag
 tag=`git describe --abbrev=0 --match 'v[0-9]*'`
+
 build_number=`git rev-list "$tag".. --count`
+
 if [ "$build_number" = "0" ]; then
   tag=`semver "$tag"`
 else
   tag=`semver "$tag" -i prerelease`".$build_number"
 fi
 
-# get a list a branches and update tags for them as well
-branches=`git branch --points-at HEAD -r | awk -F/ '{print $2}' | grep -E 'master|development|beta|production' | sort | uniq`
-tags=`printf "$branches" | sed 's/master/latest/;s/development/latest/;s/production/stable/'`" $tag"
+tags=`semver $PACKAGE_VERSION -i prerelease`" latest"
 
-
-# login to docker repository
-echo
 echo "Logging in to AWS docker"
 `aws ecr get-login --no-include-email --region us-east-1 | sed 's/-e none//'`
 
-# push docker tags
-for t in $tags; do
-  echo
-  echo "Pushing docker tag: $t"
-  image="$REPO:$t"
-  docker tag "$LOCAL_REPO:latest" "$image"
-  docker push "$image"
-done
+echo ""
+echo "Pushing docker tag: $tag"
+image="508511800738.dkr.ecr.us-east-1.amazonaws.com/smith-bot-bot:$tag"
+latest_image="508511800738.dkr.ecr.us-east-1.amazonaws.com/smith-bot:latest"
+docker tag "smith-bot:latest" "$image"
+docker push "$image"
+docker tag "smith-bot:latest" "$latest_image"
+docker push "$latest_image"
+
 
 image="$REPO:$tag"
+cluster="Web-Apps"
 for task in $TASKS; do
   task="Smith-Bot"
   echo
@@ -100,4 +59,3 @@ for task in $TASKS; do
   aws ecs update-service --cluster $cluster --service $task --task-definition $task > /dev/null
 done
 
-echo 'Finished'
