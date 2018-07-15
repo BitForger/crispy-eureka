@@ -32,7 +32,7 @@ echo "Logging in to AWS docker"
 
 echo ""
 echo "Pushing docker tag: $tag"
-image="508511800738.dkr.ecr.us-east-1.amazonaws.com/smith-bot-bot:$tag"
+image="508511800738.dkr.ecr.us-east-1.amazonaws.com/smith-bot:$tag"
 latest_image="508511800738.dkr.ecr.us-east-1.amazonaws.com/smith-bot:latest"
 docker tag "smith-bot:latest" "$image"
 docker push "$image"
