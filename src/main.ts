@@ -3,55 +3,28 @@
  * @soundtrack Dripping - Submersed
  */
 
-import { Client, Guild, GuildMember, User } from 'discord.js';
-import Config                               from "./config";
-import * as Commando                        from 'discord.js-commando';
+import { Client, Collection, Guild, GuildMember, Message, MessageSearchResult, PresenceData, User } from 'discord.js';
+import Config                                                                                       from "./config";
+import Commands                                                                                     from './commands';
 
-const client = new Commando.Client();
+const client = new Client();
 const config = new Config();
 
 const prefix = 'smith';
 
 client.on("message", message => {
   message.content = message.content.toLowerCase();
-  if (message.content.startsWith(prefix)) {
+  if ( message.content.startsWith(prefix) ) {
     let command = message.content.replace(prefix, '').trim();
-    if ( command === 'hello' ) {
-      message.channel.send(`${message.author.username}`);
-    }
-    if (command.startsWith('howgay')) {
-      let amount = Math.floor(Math.random() * Math.floor(100));
-      if (command.length === 'howgay'.length) {
-        message.channel.send(`${message.author.username} is ${amount}% gay.`);
-      }
-      else {
-        const splitCommand = command.split(" ");
-        splitCommand.shift(); //NOTE remove the actual command from string
-        let flags = splitCommand;
-        for (let i = 0; i < flags.length; i++) {
-          let flag = flags[i];
-          if ( flag.startsWith('--') ) {
-            flag = flag.substr(2);
-            if (flag === "user") {
-              flags = flags.slice(i + 1);
-              let user = flags[0];
-              const guild = message.guild;
-              let u = guild.members.find((value, key) => {
-                if (value.displayName === user) {
-                  return value;
-                }
-              });
-              if (u) {
-                message.channel.send(`<@${u.user.id}> is ${amount}% gay!`);
-              }
-            }
-            if (flag === "mention") {
-              // TODO figure out a way to allow a mention to be sent
-            }
-          }
-        }
-
-      }
+    switch ( command ) {
+      case 'hello':
+        message.channel.send(`${message.author.username}`);
+        break;
+      case 'howgay':
+        Commands.executeHowGay(command, message);
+        break;
+      default:
+        message.channel.send(`I don't know that command`);
     }
   }
 });
@@ -59,13 +32,10 @@ client.on("message", message => {
 client.on("ready", () => {
   let user = client.user;
   user.setUsername("Smith");
-  user.setPresence({
-    game: {
-      name: "pigs learn to fly",
-      type: 'STREAMING'
-    },
-    status: "online"
-  })
+  const presence: PresenceData = {
+    status: 'idle',
+  };
+  user.setPresence(presence)
     .then();
   console.log(`Successful startup as ${user.username}`)
 });
@@ -74,4 +44,5 @@ client.on("error", (error) => {
   console.log(error);
 });
 
-client.login(config.token).then(() => {});
+client.login(config.token).then(() => {
+});
