@@ -3,12 +3,23 @@
  * @soundtrack Dripping - Submersed
  */
 
-import { Client, Collection, Guild, GuildMember, Message, MessageSearchResult, PresenceData, User } from 'discord.js';
-import Config                                                                                       from "./config";
-import Commands                                                                                     from './commands';
+import { PresenceData } from 'discord.js';
+import { Client } from 'discord.js-commando'
+import Config from './config';
+import Commands from './commands';
+import {join} from "path";
 
-const client = new Client();
+const client = new Client({
+  owner: '133061072943972353',
+});
 const config = new Config();
+
+client.registry
+    .registerGroups([
+        ['fun', 'Fun Commands']
+    ])
+    .registerDefaults()
+    .registerCommandsIn(join(__dirname, 'commands'));
 
 const prefix = 'smith';
 
